@@ -1,0 +1,124 @@
+﻿<div class="jumbotron">
+    <h2>Products</h2>
+    @Html.ActionLink("Details", "Details", "Home", new { area = "" }, null)
+</div>
+<div class="row">
+    <div id="app" class="container mt-4">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Strona</th>
+                    <th scope="col">Typ</th>
+                    <th scope="col">Nazwa</th>
+                    <th scope="col">Opis</th>
+                    <th scope="col">Cena</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="product, index in products">
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>ee</td>
+                    <td>{{ product.ProdType }}</td>
+                    <td>{{ product.ProdName }}</td>
+                    <td>{{ product.ProdDescription }}</td>
+                    <td>{{ product.ProdPrice}} zł</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                products: []
+            },
+            mounted: function () {
+                axios.get('https://localhost:44338/api/Items/Get')
+                    .then(response => {
+                        this.products = response.data;
+                        console.log(response);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            }
+        })
+    </script>
+</div>
+<div class="jumbotron">
+    <h2>Products by Types</h2>
+    <button type="submit" onclick="get('laptopy')">Pokaż laptopy na stanie</button>
+    <button type="submit" onclick="get('smartfony')">Pokaż smartfony na stanie</button>
+    <button type="submit" onclick="get('fotelegamingowe')">Pokaż fotele gamingowe na stanie</button>
+    <button type="submit" onclick="get('kartygraficzne')">Pokaż karty graficzne na stanie</button>
+    <button type="submit" onclick="get('procesory')">Pokaż procesory na stanie</button>
+</div>
+<div class="row">
+    <div class="container mt-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Strona</th>
+                    <th scope="col">Typ</th>
+                    <th scope="col">Nazwa</th>
+                    <th scope="col">Opis</th>
+                    <th scope="col">Cena</th>
+                </tr>
+            </thead>
+            <tbody id="data">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function get(condition) {
+            var api_url;
+            if (condition == "laptopy") {
+                api_url = "https://localhost:44338/api/Items/GetLaptopy";
+            }
+            else if (condition == "smartfony") {
+                api_url = "https://localhost:44338/api/Items/GetSmartfony";
+            }
+            else if (condition == "fotelegamingowe") {
+                api_url = "https://localhost:44338/api/Items/GetFoteleGamingowe";
+            }
+            else if (condition == "kartygraficzne") {
+                api_url = "https://localhost:44338/api/Items/GetKartyGraficzne";
+            }
+            else if (condition == "procesory") {
+                api_url = "https://localhost:44338/api/Items/GetProcesory";
+            }
+            fetch(api_url).then(
+                res => {
+                    res.json().then(
+                        data => {
+                            console.log(data);
+                            if (data.length > 0) {
+                                var temp = "";
+                                var counter = 0;
+                                data.forEach((u) => {
+                                    counter = counter + 1;
+                                    let id1 = 3;
+                                    id1 = u.ID;
+                                    temp += "<tr>";
+                                    temp += "<td>" + counter + "</td>";
+                                    temp += "<td>" + @Html.ActionLink("Details", "Details", "Home", new { id = ViewBag.ID }, htmlAttributes:null) + "</td>";
+                                    temp += "<td>" + u.ProdType + "</td>";
+                                    temp += "<td>" + u.ProdName + "</td>";
+                                    temp += "<td>" + u.ProdDescription + "</td>";
+                                    temp += "<td>" + u.ProdPrice + "zł" + "</td></tr>";
+                                })
+                                document.getElementById("data").innerHTML = temp;
+                            }
+                        }
+                    )
+                }
+            )
+        }
+
+
+    </script>
+</div>
+
